@@ -66,7 +66,7 @@ def setup():
 def main():
 	go_to_black(100, 100)
 	go_to_white(100, 100)
-	move(100, 0, 1000)
+	move(100, 0, 1400)
 	move(100, 100, 400)
 	line_follow(5000)
 
