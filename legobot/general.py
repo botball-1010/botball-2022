@@ -45,21 +45,20 @@ def servo_control(servo_name, end_pos, rate=50):
             KIPR.set_servo_position(servo_name, i)
             KIPR.msleep(rate)
                 
-def line_follow(time, sensor=0):
+def line_follow(time, sensor=TOPH_LEFT):
     end_time = KIPR.seconds() + time
-    if sensor == 0:
-        while(KIPR.seconds() < end_time):
-            if(KIPR.analog(TOPH_LEFT) > BLACK):
+    while(KIPR.seconds() < end_time):
+        if(KIPR.analog(sensor) > BLACK):
+            if(sensor == TOPH_LEFT):
                 move(37, 50)
             else:
                 move(50, 37)
-    else:
-        while(KIPR.seconds() < end_time):
-            if(KIPR.analog(TOPH_RIGHT) > BLACK):
+        else:
+            if(sensor == TOPH_LEFT):
                 move(50, 37)
             else:
                 move(37, 50)
-                
+		
 def setup():
     KIPR.enable_servos()
     servo_control(ARM_SERVO, GROUND)
