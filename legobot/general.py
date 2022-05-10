@@ -12,10 +12,11 @@ TOPH_RIGHT = 0
 TOPH_LEFT = 1
 TOPH_BRIGHT = 2
 TOPH_BLEFT = 3
+LS = 5
     
 ARM_SERVO = 0
     
-UP = 850
+UP = 900
 GROUND = 1800
 
 BLACK = 2500
@@ -62,6 +63,16 @@ def line_follow(time, sensor=TOPH_LEFT):
             else:
                 move(37, 50)
                     
+def blf(time):
+    end_time = KIPR.seconds() + time
+    while(KIPR.seconds() < end_time):
+	if(KIPR.analog(TOPH_BRIGHT) < BACK_BLACK and KIPR.analog(TOPH_BLEFT) < BACK_BLACK):
+	    move(-50, -50)
+	elif(KIPR.analog(TOPH_BRIGHT) < BACK_BLACK and KIPR.analog(TOPH_BLEFT) > BACK_BLACK):
+	    move(-37, -50)
+	elif(KIPR.analog(TOPH_BRIGHT) > BACK_BLACK and KIPR.analog(TOPH_BLEFT) < BACK_BLACK):
+	    move(-50, -37)
+                    
 def jitter():
 	servo_control(ARM_SERVO, 900, 600)
 	servo_control(ARM_SERVO, 1600, 600)
@@ -71,20 +82,36 @@ def jitter():
 	move(0, -100, 200)
 	stop(100)
         
+def wfl():
+	START = KIPR.analog(LS)
+	while(KIPR.analog(LS) > START/2):
+		stop(100)
+      
 def setup():
     KIPR.enable_servos()
     servo_control(ARM_SERVO, GROUND)
+    wfl()
                 
 def main():
+	
 	go_to_black(100, 100)
 	go_to_white(100, 100)
 	move(100, 0, 1400)
 	move(100, 100, 400)
-	line_follow(20800)
+	line_follow(20500)
 	stop(500)
-	servo_control(ARM_SERVO, 900)
-	for i in range(10):
-		jitter()
+	servo_control(ARM_SERVO, UP)
+	jitter()
+	line_follow(1200)
+	servo_control(ARM_SERVO, GROUND)
+    
+	blf(20000)
+	stop(200)
+	move(-100, 0, 1900)
+	move(-50, -50, 4000)
+        
+	KIPR.ao()
+	KIPR.disable_servos()
     
 if __name__== "__main__":
     sys.stdout = os.fdopen(sys.stdout.fileno(),"w",0)
