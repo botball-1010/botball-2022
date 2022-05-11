@@ -93,25 +93,33 @@ def setup():
     wfl()
                 
 def main():
-	
-	go_to_black(100, 100)
-	go_to_white(100, 100)
-	move(100, 0, 1400)
-	move(100, 100, 400)
-	line_follow(20500)
-	stop(500)
-	servo_control(ARM_SERVO, UP)
-	jitter()
-	line_follow(1200)
-	servo_control(ARM_SERVO, GROUND)
+    # Align Roomba to Line
+    go_to_black(100, 100)
+    go_to_white(100, 100)
+    move(100, 0, 1400)
+    move(100, 100, 400)
     
-	blf(20000)
-	stop(200)
-	move(-100, 0, 1900)
-	move(-50, -50, 4000)
-        
-	KIPR.ao()
-	KIPR.disable_servos()
+    # Scoop poms to container
+    line_follow(20500)
+    stop(500)
+    
+    # Lift and Remove any Poms from Blade to Container
+    servo_control(ARM_SERVO, UP)
+    jitter()
+    line_follow(1200)
+    
+    # Latch to container
+    servo_control(ARM_SERVO, GROUND)
+    
+    # Move backwards to designated container spot
+    blf(20000)
+    stop(200)
+    move(-100, 0, 1900)
+    move(-50, -50, 4000)
+    
+    # Turn off   
+    KIPR.ao()
+    KIPR.disable_servos()
     
 if __name__== "__main__":
     sys.stdout = os.fdopen(sys.stdout.fileno(),"w",0)
