@@ -10,6 +10,7 @@ fast_speed = 250
 base_servo = 1
 top_servo = 3
 
+LS = 5
 
 ## built in wrappers
 
@@ -34,6 +35,8 @@ def turn_on():
     KIPR.create_connect()
     print("Connected!")
     KIPR.enable_servos()
+    print("Enable Servos")
+    
 
 
 ## top level functions for use
@@ -58,6 +61,11 @@ def drive(left_power, right_power, duration):
     stop()    
 
 # main routines
+def wfl():
+    START = KIPR.analog(LS)
+    while(KIPR.analog(LS) > START/2):
+        pause(50)
+
 def back_align():
     drive(-100, -100, 500)
 
@@ -71,63 +79,73 @@ def claw_tighten():
     servo_control(top_servo, 590)
 
 def drive_towards_rings():
-    drive(50, 50, 2700)    
+    drive(50, 50, 2950)    
 
 def left_rotate_servo():
     servo_control(base_servo, 0, rate=150)
-    drive(200, -200, 900)
-
+    drive(200, -200, 950)
 
 def drive_toward_cylinder():
-    drive(100, 100, 300)
+    drive(107, 100, 3050)
 
 
 def cylinder_align():
-    pass
+    drive(100, -100, 2100)
 
-def in_cylinder():
-    pass
-
-
-def pause():
+def pause(time):
     _drive_direct(0, 0)
-    msleep(50)
+    msleep(time)
 
 def reset():
     servo_control(base_servo, 330)
     servo_control(top_servo, 750)
 
 def main():
-    turn_on()
 
+    # Roomba Setup
+    turn_on()
     reset()
+    
+    # Wait for light start
+    wfl()
+
+    KIPR.shut_down_in(119)
+
 
     # back align with wall in start box
     back_align()
 
+    # Move claw into operating position
     straighten_claw()
-
     claw_open()
 
+    # Set Roomba to Claw Position
     drive_towards_rings()
 
-    pause()
-    
-    claw_tighten()
-    
-    left_rotate_servo()
+    # Reduce extraneous momentum 
+    pause(50)
 
-    """
-    # Go to cylinder
+    # Tighten claw around rings
+    claw_tighten()
+
+    # Rotate Claw and Rotate Roomba to Remove Rings  
+    left_rotate_servo()
+    
+    # Align Roomba to Rotation Position
     drive_toward_cylinder()
 
+    # Rotate Roomba to Insert Rings into Cylinder
     cylinder_align()
 
-    in_cylinder()
-
+    # Release rings
     claw_open()
-    """
+
+
 
 if __name__== "__main__":
     sys.stdout = os.fdopen(sys.stdout.fileno(),"w",0)
     main();
+
+
+
+    
